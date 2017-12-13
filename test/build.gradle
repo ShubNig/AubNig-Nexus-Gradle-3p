@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 // for butterknife
 //apply plugin: 'com.jakewharton.butterknife'
 
+apply from: rootProject.file("gradle/codeQualityApp.gradle")
+
 android {
     compileSdkVersion ANDROID_COMPILE_SDK_VERSION as int
 
@@ -15,6 +17,14 @@ android {
 //        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+    }
+
+    testOptions.unitTests {
+        all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
     }
 
     buildTypes {

@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 apply from: rootProject.file("package.gradle")
+apply from: rootProject.file("gradle/utils.gradle")
 
 buildscript {
     ext.kotlin_version = '1.2.10'
@@ -13,6 +14,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:$gradle_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'
+        classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
