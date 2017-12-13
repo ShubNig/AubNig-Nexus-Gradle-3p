@@ -1,0 +1,73 @@
+subprojects {
+    apply plugin: 'maven'
+    apply plugin: 'idea'
+
+    ext {
+        gradle_version = '3.0.0'
+        support_version = '26.1.0'
+        kotlin_version = '1.2.10'
+
+        public_repo = [
+                aliyun    : 'http://maven.aliyun.com/nexus/content/groups/public/',
+                jitpack_io: 'https://jitpack.io',
+        ]
+
+        test_implement = [
+                junit                         : 'junit:junit:4.12',
+                mockito_core                  : 'org.mockito:mockito-core:2.7.22',
+                robolectric                   : 'org.robolectric:robolectric:3.3.2',
+                robolectric_shadows_support_v4: 'org.robolectric:shadows-support-v4:3.3.2',
+                robolectric_shadows_multidex  : 'org.robolectric:shadows-multidex:3.3.2',
+                easymock                      : 'org.easymock:easymock:3.4',
+                powermock_core                : 'org.powermock:powermock-core:1.6.5',
+                powermock_module_junit4       : 'org.powermock:powermock-module-junit4:1.6.5',
+                powermock_api_easymock        : 'org.powermock:powermock-api-easymock:1.6.5',
+        ]
+        android_test_implement = [
+                com_android_support_test_runner       : 'com.android.support.test:runner:1.0.1',
+                com_android_support_test_espresso_core: 'com.android.support.test.espresso:espresso-core:3.0.1',
+                robotium_solo                         : 'com.jayway.android.robotium:robotium-solo:5.5.4'
+        ]
+
+        annotation_processor = [
+                arouter_compiler    : 'com.alibaba:arouter-compiler:1.1.1',
+                butterknife_compiler: 'com.jakewharton:butterknife-compiler:8.8.1',
+        ]
+
+        apt_compiler = [
+                butterknife_compiler: 'com.jakewharton:butterknife-compiler:8.8.1',
+        ]
+
+        depends = [
+                kotlin_stdlib_jre7                     : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
+                butterknife: 'com.jakewharton:butterknife:8.8.1',
+                eventbus   : 'de.greenrobot:eventbus:3.1.1',
+        ]
+
+        implement_pkg = [
+                com_android_support_support_annotations: "com.android.support:support-annotations:$support_version",
+                com_android_support_support_v4         : "com.android.support:support-v4:$support_version",
+                com_android_support_support_core_ui    : "com.android.support:support-core-ui:$support_version",
+                com_android_support_appcompat_7        : "com.android.support:appcompat-v7:$support_version",
+                com_android_support_recyclerview_v7    : "com.android.support:recyclerview-v7:$support_version",
+                com_android_support_cardview_v7        : "com.android.support:cardview-v7:$support_version",
+                com_android_support_design             : "com.android.support:design:$support_version",
+                com_android_support_multidex           : 'com.android.support:multidex:1.0.1',
+                com_android_constraint_layout          : 'com.android.support.constraint:constraint-layout:1.0.2',
+        ]
+
+        analytics = [
+                umeng: 'com.umeng.analytics:analytics:6.1.2',
+        ]
+        provided_depends = [
+        ]
+
+        component_depends = [
+        ]
+
+        res_provided = [
+        ]
+        res_depends = [
+        ]
+    }
+}
