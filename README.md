@@ -8,8 +8,8 @@ Project Runtime:
 |-----|-----------|
 |jdk|1.8.+|
 |gradle|3.3.+|
-|Android Studio|3.0.0|
-|com.android.tools.build:gradle|3.0.0|
+|Android Studio|3.0.1|
+|com.android.tools.build:gradle|3.0.1|
 |appcompat-v7|26.1.0|
 |compile SDK version|26|
 |build tools version|26.0.0|
