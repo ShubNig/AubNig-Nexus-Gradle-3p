@@ -1,1 +1,3 @@
-include ':app', ':test', ':plugintemp'
+include ':app'
+include ':test'
+//include ':plugintemp'
