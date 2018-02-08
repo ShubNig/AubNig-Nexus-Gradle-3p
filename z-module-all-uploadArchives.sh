@@ -79,9 +79,9 @@ checkGitStatus(){
 
 checkGitRemoteSameBranchSame(){
     now_branch=$(git branch -v | awk 'NR==1{print $2}')
-    echo -e "now_branch => ${now_branch}"
+#    echo -e "now_branch => ${now_branch}"
     diff_branch_is_same=$(git remote show origin | grep "^.*${now_branch} pushes to ${now_branch}.*$" | grep "up to date" | wc -l | awk 'gsub(/^ *| *$/,"")')
-    echo -e "diff_branch_is_same => ${diff_branch_is_same}"
+#    echo -e "diff_branch_is_same => ${diff_branch_is_same}"
     if [ ${diff_branch_is_same} -ne 1 ]; then
         echo -e "\033[;31mNow path: ${run_path}\nNot same as origin! You must use [ git remote show origin ] to check this\033[0m"
         exit 1
