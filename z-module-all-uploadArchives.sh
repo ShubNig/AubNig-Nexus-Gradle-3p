@@ -35,7 +35,7 @@ checkEnv(){
   fi
 }
 
-checkGradleModule(){
+checkGradleModules(){
     module_len=${#android_build_modules[@]}
     if [ ${module_len} -le 0 ]; then
         echo "you set [ android_build_modules ] is empty"
@@ -73,7 +73,7 @@ checkGitStatus(){
         echo -e "\033[;31mNow path: ${run_path}\nNot clean! You must use git status to check this\033[0m"
         exit 1
     else
-        echo -e "\033[;30mCheck path: ${run_path}\nRun git status success\033[0m"
+        echo -e "\033[;36mCheck path: ${run_path}\nRun git status success\033[0m"
     fi
 }
 
@@ -88,7 +88,7 @@ checkEnv git
 checkEnv java
 checkEnv android
 checkEnv gradle
-checkGradleModule
+checkGradleModules
 
 if [ ! -x "gradlew" ]; then
     echo "this path gradlew not exec just try to fix!"

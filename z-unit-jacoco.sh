@@ -37,7 +37,7 @@ checkEnv(){
   fi
 }
 
-checkGradleModule(){
+checkGradleModules(){
     module_len=${#android_build_modules[@]}
     if [ ${module_len} -le 0 ]; then
         echo "you set [ android_build_modules ] is empty"
@@ -79,7 +79,7 @@ checkEnv git
 checkEnv java
 checkEnv android
 checkEnv gradle
-checkGradleModule
+checkGradleModules
 
 if [ ! -x "gradlew" ]; then
     echo "this path gradlew not exec just try to fix!"
@@ -88,9 +88,11 @@ else
     echo "=> local gradlew can use"
 fi
 
-git status
+echo -e "now git pull, please wait..."
 git pull
+checkFuncBack "git pull"
 git branch -v
+git status
 
 if [ -n "$1" ];then
     echo "you are not set product_flavors, like ${product_flavors_list}, use default"

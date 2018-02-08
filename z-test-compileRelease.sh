@@ -8,11 +8,10 @@ android_build_modules[0]=test
 #android_build_modules[1]=module
 
 product_flavors=""
-product_flavors_list="Test Dev"
 
 # change this for middle or last build job
 android_build_task_middle="generate${product_flavors}ReleaseSources"
-android_build_task_last="connected${product_flavors}DebugAndroidTest"
+android_build_task_last="compile${product_flavors}ReleaseJavaWithJavac"
 
 shell_run_path=$(cd `dirname $0`; pwd)
 
@@ -35,7 +34,7 @@ checkEnv(){
   fi
 }
 
-checkGradleModule(){
+checkGradleModules(){
     module_len=${#android_build_modules[@]}
     if [ ${module_len} -le 0 ]; then
         echo "you set [ android_build_modules ] is empty"
@@ -77,7 +76,7 @@ checkEnv git
 checkEnv java
 checkEnv android
 checkEnv gradle
-checkGradleModule
+checkGradleModules
 
 if [ ! -x "gradlew" ]; then
     echo "this path gradlew not exec just try to fix!"
@@ -90,27 +89,49 @@ git status
 git pull
 git branch -v
 
-if [ -n "$1" ];then
-    echo "you are not set product_flavors, like ${product_flavors_list}, use default"
-else
-    product_flavors=$1
-    android_build_task_middle="generate${product_flavors}ReleaseSources"
-    android_build_task_last="connected${product_flavors}DebugAndroidTest"
-fi
-
 # if want clean unlock this
 echo "-> gradle task clean"
 ./gradlew clean
 
 for module in ${android_build_modules[@]};
 do
-    echo "-> gradle task ${module}:dependencies"
-    ./gradlew -q ${module}:dependencies
-#    echo "-> gradle task ${module}:dependencies --refresh-dependencies"
-#    ./gradlew -q ${module}:dependencies --refresh-dependencies
+#    echo "-> gradle task ${module}:dependencies"
+#    ./gradlew -q ${module}:dependencies
+    echo "-> gradle task ${module}:dependencies --refresh-dependencies --info"
+    ./gradlew ${module}:dependencies --refresh-dependencies --info
     echo "-> gradle task ${module}:${android_build_task_middle}"
     ./gradlew ${module}:${android_build_task_middle}
     echo "-> gradle task ${module}:${android_build_task_last}"
     ./gradlew ${module}:${android_build_task_last}
+    done
+
+# jenkins config first Invoke Gradle script
+echo -e "\nJenkins config \033[;36mInvoke Gradle script\033[0m"
+echo -e "\033[;34mTasks\033[0m"
+echo -e "clean --refresh-dependencies"
+
+# jenkins config Invoke Gradle script
+echo -e "\nJenkins config \033[;36mInvoke Gradle script\033[0m"
+echo -e "\033[;34mTasks\033[0m"
+for module in ${android_build_modules[@]};
+do
+    echo -e "-q :${module}:dependencies"
+    done
+
+# jenkins config Invoke Gradle script
+echo -e "\nJenkins config \033[;36mInvoke Gradle script\033[0m"
+echo -e "\033[;34mTasks\033[0m"
+for module in ${android_build_modules[@]};
+do
+    echo -e "-q :${module}:${android_build_task_middle}"
+    echo -e "-q :${module}:${android_build_task_last}"
+    done
+
+# jenkins config Invoke Gradle script
+echo -e "\nJenkins config \033[;36mInvoke Gradle script\033[0m"
+echo -e "\033[;34mTasks\033[0m"
+for module in ${android_build_modules[@]};
+do
+    echo -e ":${module}:assemble${product_flavors}Release --profile"
     done
 
