@@ -21,6 +21,7 @@ gen/
 
 # Gradle files
 .gradle/
+.gradletask*
 /.gradle
 build/
 

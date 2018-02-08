@@ -7,7 +7,12 @@ android_build_modules=
 android_build_modules[0]=plugintemp
 #android_build_modules[1]=next
 
-# change this for middle or last build job
+# change this for root job
+android_build_task_refresh_depends="generateReleaseSources --refresh-dependencies"
+android_build_task_compile="compileReleaseJavaWithJavac"
+
+# change this for module middle or last build job
+android_build_task_first="dependencies"
 android_build_task_middle="generateReleaseSources"
 android_build_task_last="uploadArchives"
 
@@ -120,18 +125,24 @@ checkGitRemoteSameBranchSame
 
 # if want clean unlock this
 echo "-> gradle task clean"
-./gradlew clean
+${shell_run_path}/gradlew clean
+
+echo "-> gradle task ${android_build_task_refresh_depends}"
+${shell_run_path}/gradlew ${android_build_task_refresh_depends}
+
+echo "-> gradle task ${android_build_task_compile}"
+${shell_run_path}/gradlew ${android_build_task_compile}
 
 for module in ${android_build_modules[@]};
 do
-    echo "-> gradle task ${module}:dependencies"
-    ./gradlew -q ${module}:dependencies
+    echo "-> gradle task ${shell_run_path}/gradlew -q ${module}:${android_build_task_first}"
+    ${shell_run_path}/gradlew -q ${module}:${android_build_task_first}
 #    echo "-> gradle task ${module}:dependencies --refresh-dependencies"
-#    ./gradlew -q ${module}:dependencies --refresh-dependencies
-    echo "-> gradle task -q ${module}:${android_build_task_middle} --refresh-dependencies"
-    ./gradlew -q ${module}:${android_build_task_middle} --refresh-dependencies
-    echo "-> gradle task ${module}:${android_build_task_last}"
-    ./gradlew ${module}:${android_build_task_last}
+#    ${shell_run_path}/gradlew -q ${module}:dependencies --refresh-dependencies
+#    echo "-> gradle task -q ${module}:${android_build_task_middle}"
+#    ${shell_run_path}/gradlew -q ${module}:${android_build_task_middle}
+    echo "-> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+    ${shell_run_path}/gradlew ${module}:${android_build_task_last}
     done
 
 # jenkins config first Invoke Gradle script
