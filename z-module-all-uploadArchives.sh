@@ -86,7 +86,7 @@ checkGitRemoteSameBranchSame(){
         echo -e "\033[;31mNow path: ${run_path}\nNot same as origin! You must use [ git remote show origin ] to check this\033[0m"
         exit 1
     else
-        echo -e "\033[;36mCheck path: ${run_path}\nRun git origin as the same\033[0m"
+        echo -e "\033[;36mCheck path: ${run_path}\nLocal between origin as the same\033[0m"
     fi
 }
 
