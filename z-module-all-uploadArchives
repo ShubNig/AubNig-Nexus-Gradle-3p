@@ -11,24 +11,27 @@ android_build_modules[0]=plugintemp
 android_build_task_middle="generateReleaseSources"
 android_build_task_last="uploadArchives"
 
+run_path=$(pwd)
+shell_run_name=$(basename $0)
 shell_run_path=$(cd `dirname $0`; pwd)
 
 checkFuncBack(){
-  if [ $? -eq 0 ]; then
-    echo "$1 success"
-  else
-    echo "$1 error stop build"
+  if [ $? -ne 0 ]; then
+    echo -e "\033[;31mRun [ $1 ] error exit code 1\033[0m"
     exit 1
+  # else
+  #   echo -e "\033[;30mRun [ $1 ] success\033[0m"
   fi
 }
 
 checkEnv(){
-    evn_checker=`which $1`
+  evn_checker=`which $1`
+  checkFuncBack "which $1"
   if [ ! -n "evn_checker" ]; then
-    echo "check event [ $1 ] error exit"
+    echo -e "\033[;31mCheck event [ $1 ] error exit\033[0m"
     exit 1
-  else
-    echo -e "Cli [ $1 ] event check success\n-> $1 at Path: ${evn_checker}"
+  # else
+  #   echo -e "\033[;32mCli [ $1 ] event check success\033[0m\n-> \033[;34m$1 at Path: ${evn_checker}\033[0m"
   fi
 }
 
@@ -63,6 +66,17 @@ checkGradleModule(){
     done
 }
 
+checkGitStatus(){
+    git_status_line=$(git status -s | wc -l)
+    echo -e "git_status_line ${git_status_line}"
+    if [[ git_status_line -ne 0 ]]; then
+        echo -e "\033[;31mNow path: ${run_path}\nNot clean! You must use git status to check this\033[0m"
+        exit 1
+    else
+        echo -e "\033[;32mCheck path: ${run_path}\nRun git status success\033[0m"
+    fi
+}
+
 if [ ! -n "$ANDROID_HOME" ]; then
     echo "You are not setting ANDROID_HOME stop build"
     exit 1
@@ -83,10 +97,12 @@ else
     echo "=> local gradlew can use"
 fi
 
-git status
+echo -e "now git pull, please wait..."
 git pull
 checkFuncBack "git pull"
 git branch -v
+git status
+checkGitStatus
 
 # if want clean unlock this
 echo "-> gradle task clean"
@@ -107,8 +123,8 @@ do
 # jenkins config first Invoke Gradle script
 echo -e "\nJenkins config \033[;36mInvoke Gradle script\033[0m"
 echo -e "\033[;34mTasks\033[0m"
-echo -e "clean --refresh-dependencies
-generateReleaseSources
+echo -e "clean
+generateReleaseSources --refresh-dependencies
 compileReleaseJavaWithJavac"
 
 # jenkins config test Invoke Gradle script
