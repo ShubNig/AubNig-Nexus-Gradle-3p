@@ -128,8 +128,8 @@ do
     ./gradlew -q ${module}:dependencies
 #    echo "-> gradle task ${module}:dependencies --refresh-dependencies"
 #    ./gradlew -q ${module}:dependencies --refresh-dependencies
-    echo "-> gradle task ${module}:${android_build_task_middle}"
-    ./gradlew ${module}:${android_build_task_middle}
+    echo "-> gradle task -q ${module}:${android_build_task_middle} --refresh-dependencies"
+    ./gradlew -q ${module}:${android_build_task_middle} --refresh-dependencies
     echo "-> gradle task ${module}:${android_build_task_last}"
     ./gradlew ${module}:${android_build_task_last}
     done
