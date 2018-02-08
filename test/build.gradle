@@ -28,13 +28,19 @@ android {
         }
     }
 
-    testOptions.unitTests {
-        all {
-            jacoco {
-                includeNoLocationClasses = true
-            }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
     }
+
+//    testOptions.unitTests {
+//        all {
+//            jacoco {
+//                includeNoLocationClasses = true
+//            }
+//        }
+//    }
 
     buildTypes {
         debug {

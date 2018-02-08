@@ -3,6 +3,7 @@ package com.sinlov.aubnig.test.demo.widget;
 import android.widget.Toast;
 
 import com.sinlov.aubnig.test.demo.data.RandomString;
+import com.sinlov.aubnig.test.demo.needchange.R;
 
 import org.junit.Test;
 import org.robolectric.shadows.ShadowToast;
@@ -55,5 +56,16 @@ public class TestToast extends RobolectricTemp {
         // verify
         String latestToast = ShadowToast.getTextOfLatestToast();
         assertEquals("test_02_show_toast_fail", STRING_NULL, latestToast);
+    }
+
+    @Test
+    public void test_03_show_message_by_id() throws Exception {
+        // mock
+        String app_name = application.getString(R.string.app_name);
+        // do
+        Toast.makeText(application, R.string.app_name, Toast.LENGTH_SHORT).show();
+        // verify
+        String latestToast = ShadowToast.getTextOfLatestToast();
+        assertEquals("test_03_show_message_by_id", app_name, latestToast);
     }
 }
