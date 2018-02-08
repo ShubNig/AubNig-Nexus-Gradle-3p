@@ -68,12 +68,12 @@ checkGradleModule(){
 
 checkGitStatus(){
     git_status_line=$(git status -s | wc -l)
-    echo -e "git_status_line ${git_status_line}"
+#    echo -e "git_status_line ${git_status_line}"
     if [[ git_status_line -ne 0 ]]; then
         echo -e "\033[;31mNow path: ${run_path}\nNot clean! You must use git status to check this\033[0m"
         exit 1
     else
-        echo -e "\033[;32mCheck path: ${run_path}\nRun git status success\033[0m"
+        echo -e "\033[;30mCheck path: ${run_path}\nRun git status success\033[0m"
     fi
 }
 
