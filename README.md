@@ -25,14 +25,7 @@ Project Runtime:
 - com.android.tools.build:gradle:3.0.0
 - minSdkVersion 15
 
-test Runtime
-
-```gradle
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.7.22'
-    testCompile "org.robolectric:robolectric:3.3.2"
-    testCompile "org.robolectric:shadows-support-v4:3.3.2"
-```
+test Runtime see `package.gradle` test_implement
 
 
 # Last Version Info
@@ -42,6 +35,27 @@ test Runtime
 
 provides :
 - ~~Full method count 00~~
+
+# Depends
+
+load by `root build.gradle`
+
+```
+apply from: rootProject.file("package.gradle")
+```
+
+and all depend see in `$project_root/package.gradle`
+
+use by
+
+```gradle
+dependencies{
+    // in app
+    implementation depends.butterknife
+    // in moudle
+    api depends_com_android_support.appcompat_7
+}
+```
 
 # Build
 

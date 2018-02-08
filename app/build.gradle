@@ -35,8 +35,8 @@ dependencies {
             android_test_implement.com_android_support_test_espresso_core
     // test end
 
-    implementation implement_pkg.com_android_support_appcompat_7,
-            implement_pkg.com_android_constraint_layout
+    implementation depends_com_android_support.appcompat_7,
+            depends_com_android_support.constraint_layout
     api depends.kotlin_stdlib_jre7
 
 //    annotationProcessor annotation_processor.butterknife_compiler
