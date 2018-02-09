@@ -4,7 +4,7 @@
 
 # change this for module
 android_build_modules=
-android_build_modules[0]=test
+android_build_modules[0]=plugintemp
 #android_build_modules[1]=next
 
 # change this for root job
@@ -91,10 +91,10 @@ checkGradleModules(){
             cut_module_set=$(echo ${find_module_set} | cut -c 1-2)
 #            echo -e "cut_module_set -> ${cut_module_set}"
             if [ "${cut_module_set}" == "//" ]; then
-                pE "Check gradle module [ ${module} ] error\nAt Path: ${setting_gradle_path}\n-> setting is: ${find_module_set}"
+                pE "Check gradle module [ ${module} ] error\nAt Path: ${setting_gradle_path}\n-> include setting is: ${find_module_set}"
                 exit 1
             else
-                echo -e "check gradle module [ ${module} ] success\nAt Path: ${setting_gradle_path}\n-> setting is: ${find_module_set}"
+                echo -e "check gradle module [ ${module} ] success\nAt Path: ${setting_gradle_path}\n-> include setting is: ${find_module_set}"
             fi
         fi
         module_path="${shell_run_path}/${module}"
