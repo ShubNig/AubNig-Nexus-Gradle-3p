@@ -4,7 +4,7 @@
 
 # change this for module
 android_build_modules=
-android_build_modules[0]=test
+android_build_modules[0]="test"
 #android_build_modules[1]=next
 
 # change this for productFlavors
