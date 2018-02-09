@@ -136,7 +136,12 @@ checkGitRemoteSameBranchSame(){
         echo -e "local git is tag => ${local_tag_name}"
         echo -e "No need to check local as ${default_origin_name}"
     else
-        now_branch=$(git branch -v | grep "\*" | awk 'NR==1{print $2}')
+        now_branch=$(git branch -vv | grep "\*" | awk 'NR==1{print $2}')
+        cut_now_branch=$(echo ${find_module_set} | cut -c 1-2)
+        if [ "${now_branch}" == "(" ]; then
+            now_branch=$(git branch -vv | grep "\*" | awk 'NR==1{print $6}')
+            now_branch=$($(git branch -vv | grep ${now_branch}) | awk 'NR==1{print $2}')
+        fi
         echo -e "now_branch => ${now_branch}"
         diff_branch_is_same=$(git remote show ${default_origin_name} | grep "^.*${now_branch} pushes to ${now_branch}.*$" | grep "up to date" | wc -l | awk 'gsub(/^ *| *$/,"")')
         echo -e "diff_branch_is_same => ${diff_branch_is_same}"
