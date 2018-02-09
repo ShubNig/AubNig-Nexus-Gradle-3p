@@ -32,6 +32,7 @@ android {
         all {
             jacoco {
                 includeNoLocationClasses = true
+                includeAndroidResources = true
             }
         }
     }
