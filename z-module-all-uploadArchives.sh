@@ -125,7 +125,7 @@ checkGitStatusClean(){
 
 local_tag_name=""
 checkLocalIsGitTag(){
-    now_commit_code=$(git branch -v | awk 'NR==1{print $3}')
+    now_commit_code=$(git branch -v | grep "\*" | awk 'NR==1{print $3}')
 #    echo -e "non_branch_code => ${now_commit_code}"
     local_tag_name=$(git tag --points-at ${now_commit_code})
 #    echo -e "now_commit_code_tag => ${local_tag_name}"
