@@ -153,7 +153,7 @@ You can use \033[;32m ${shell_run_name} -m snapshot\033[0m\n
 More configuration\n
 \t-m [moduleName] set \033[;33mDefault mode is ${build_mode}, script will check git branch same as ${default_origin_name}\033[0m\n
 \t\t[moduleName]\033[;32m only use snapshot tag release\033[0m\n
-\t-f force \033[;36m ${shell_run_name} -f force do gradle job -c\033[0m\n
+\t-f force \033[;36m ${shell_run_name} -f force do gradle tasks\033[0m\n
 "
 
 if [ $# == 0 ]; then
