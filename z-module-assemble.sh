@@ -4,11 +4,17 @@
 
 # change this for module
 android_build_modules=
-android_build_modules[0]=plugintemp
+android_build_modules[0]=test
 #android_build_modules[1]=next
 
+# change this for productFlavors
+product_flavors=
+product_flavors[0]="Dev"
+#product_flavors[1]="Test"
+#product_flavors[2]="Prod"
+
 # change this for default build Type
-android_build_type="Release"
+android_build_type="Debug"
 # change this for root job
 android_build_task_generate="generate${android_build_type}Sources --refresh-dependencies"
 android_build_task_compile="compile${android_build_type}JavaWithJavac"
@@ -16,7 +22,7 @@ android_build_task_compile="compile${android_build_type}JavaWithJavac"
 # change this for module middle or last build job
 android_build_task_first="dependencies"
 android_build_task_middle="generate${android_build_type}Sources"
-android_build_task_last="uploadArchives"
+android_build_task_last="assemble${android_build_type}"
 
 run_path=$(pwd)
 shell_run_name=$(basename $0)
@@ -158,9 +164,12 @@ You can use \033[;32m ${shell_run_name} -m snapshot\033[0m\n
 More configuration\n
 \t-m [moduleName] set \033[;33mDefault mode is ${build_mode}, script will check git branch same as ${default_origin_name}\033[0m\n
 \t\t[moduleName]\033[;32m only use snapshot tag release\033[0m\n
+\t-t [buildType] set \033[;33mDefault build type is ${android_build_type}\033[0m\n
+\t\t[buildType]\033[;32m only use debug release\033[0m\n
+\t-a all productFlavors \033[;36m ${shell_run_name} force do all productFlavors tasks\033[0m\n
 \t-c do clean task at begin of build\033[;36m ${shell_run_name} -c\033[0m\n
 \t-r not --refresh-dependencies at ${android_build_task_generate} \033[;36m ${shell_run_name} -r\033[0m\n
-\t-f force \033[;36m ${shell_run_name} -f force do gradle tasks\033[0m\n
+\t-f force \033[;36m ${shell_run_name} -f force do gradle tasks not check\033[0m\n
 "
 
 if [ $# == 0 ]; then
@@ -174,7 +183,7 @@ elif [ $# == 1 ]; then
 else
     run_gradle_module=""
     other_module=""
-    while getopts "hfcrm:" arg #after param has ":" need option
+    while getopts "hfcarm:t:" arg #after param has ":" need option
     do
         case ${arg} in
             h)
@@ -187,6 +196,9 @@ else
             c)
                 is_clean_before_build=1
             ;;
+            a)
+                is_all_product_flavors_build=1
+            ;;
             r)
                 is_not_refresh_dependencies=1
             ;;
@@ -197,12 +209,28 @@ else
                 elif [ ${OPTARG} == "tag" ]; then
                     build_mode=${OPTARG}
                 elif [ ${OPTARG} == "release" ]; then
-                    build_mode=${OPTARG}
+                    android_build_type=${OPTARG}
                 else
                     pE "Build mode is not support [ ${OPTARG} ]"
                     echo -e "Only support\033[;33m ( snapshot tag release )\033[0m"
                     exit 1
                 fi
+            ;;
+            t)
+                echo -e "-> Set build type is [ \033[;32m${OPTARG}\033[0m ]"
+                if [ ${OPTARG} == "debug" ]; then
+                    android_build_type="Debug"
+                elif [ ${OPTARG} == "release" ]; then
+                    android_build_type="Release"
+                else 
+                    pE "Build type is not support [ ${OPTARG} ]"
+                    echo -e "Only support\033[;33m ( debug release )\033[0m"
+                    exit 1
+                fi
+                android_build_task_generate="generate${android_build_type}Sources --refresh-dependencies"
+                android_build_task_compile="compile${android_build_type}JavaWithJavac"
+                android_build_task_middle="generate${android_build_type}Sources"
+                android_build_task_last="assemble${android_build_type}"
             ;;
         esac
     done
@@ -257,7 +285,7 @@ if [ ! -x "gradlew" ]; then
 #    echo "=> local gradlew can use"
 fi
 
-if [ ${is_clean_before_build} -eq 1 ];then
+if [ ${is_clean_before_build} -eq 1 ]; then
     echo "=> gradle task clean"
     ${shell_run_path}/gradlew clean
 fi
@@ -276,8 +304,27 @@ do
 #    ${shell_run_path}/gradlew -q ${module}:dependencies --refresh-dependencies
 #    pD "-> gradle task -q ${module}:${android_build_task_middle}"
 #    ${shell_run_path}/gradlew -q ${module}:${android_build_task_middle}
-    pD "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
-    ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+    product_flavor_len=${#product_flavors[@]}
+    if [ ${is_all_product_flavors_build} -eq 0 ];then
+        pI "You set build productFlavor is All"
+        pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+        ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+        exit 0
+    fi
+    if [ ${product_flavor_len} -le 0 ]; then
+        pI "You set build productFlavor is None, so do All"
+        pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+        ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+        exit 0
+    fi
+    for product_flavor in ${product_flavors[@]};
+    do
+        android_build_task_last="assemble${product_flavors}${android_build_type}"
+        ${shell_run_path}/gradlew ${module}:tasks | grep ${android_build_task_last}
+        checkFuncBack "${shell_run_path}/gradlew ${module}:tasks | grep ${android_build_task_last}"
+        pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+        ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+        done
     done
 
 # jenkins config first Invoke Gradle script

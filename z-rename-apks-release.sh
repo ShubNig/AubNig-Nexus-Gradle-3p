@@ -10,8 +10,8 @@ build_mode="release"
 
 check_count_apk_for_rename(){
     if [ -d "${build_module_name}/build/outputs/apk/" ]; then
-        rename_apk_count=$(ls -al "${build_module_name}/build/outputs/apk/" | grep ".apk" | wc -l)
-        echo -e "Find Out build Apk Count:${rename_apk_count}\n"
+        rename_apk_count=$(find "${build_module_name}/build/outputs/apk/" -name "*.apk" | wc -l | awk 'gsub(/^ *| *$/,"")')
+        echo -e "Find Out build Apk Count: ${rename_apk_count}\n"
     else
         echo -e "can not find outputs apk!"
         exit 1
@@ -19,12 +19,14 @@ check_count_apk_for_rename(){
 }
 
 rename_apk_by_module(){
-    apk_file=$(find "${build_module_name}/build/outputs/apk" -name "*$1-*")
-    now_time=$(date "+%Y-%m-%d-%H-%M")
-    new_tag="${now_time}__$RANDOM"
-    new_name="${build_module_name}/build/outputs/apk/${build_tag}-${project_version_name}-$1-${new_tag}.apk"
-    echo -e "From apk: ${apk_file} \nTo NewApk: ${new_name}"
-    mv "${apk_file}" "${new_name}"
+    apk_file=$(find "${build_module_name}/build/outputs/apk" -name "*$1-*$2.apk")
+    if [ -n "${apk_file}" ]; then
+        now_time=$(date "+%Y-%m-%d-%H-%M")
+        new_tag="${now_time}__$RANDOM"
+        new_name="${build_module_name}/build/outputs/apk/${build_tag}-${project_version_name}-$1-${new_tag}.apk"
+        echo -e "From apk: ${apk_file} \nTo NewApk: ${new_name}"
+        mv "${apk_file}" "${new_name}"
+    fi
 }
 
 
@@ -76,6 +78,6 @@ check_count_apk_for_rename
 for product_flavor in ${build_product_flavors[@]};
 do
     echo "-> rename apk product_flavor name: ${product_flavor}"
-        rename_apk_by_module "${product_flavor}"
+        rename_apk_by_module "${product_flavor}" ${build_mode}
     done
 exit 0
