@@ -230,7 +230,7 @@ checkEnv gradle
 checkGradleModules
 echo -e "now git pull, please wait..."
 git pull
-checkFuncBack "git pull"
+#checkFuncBack "git pull"
 git branch -v
 git status
 
