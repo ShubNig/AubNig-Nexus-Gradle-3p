@@ -217,17 +217,17 @@ git status
 #echo -e "is_force_build ${is_force_build}"
 if [ ${is_force_build} -eq 0 ]; then
     if [ "${build_mode}" == "snapshot" ]; then
-        pD "Now build mode is [ ${build_mode} ], script will not check status tag"
+        pD "=> Now build mode is [ ${build_mode} ], script will not check status tag"
     elif [ "${build_mode}" == "tag" ]; then
-        pW "Now build mode is [ ${build_mode} ], script will check git status"
+        pW "=> Now build mode is [ ${build_mode} ], script will check git status and must be tag"
         checkGitStatusClean
         checkLocalIsGitTag
         if [ ! -n "${local_tag_name}" ]; then
-            pE "This commit is not tag!"
+            pE "This commit is not tag! So stop build"
             exit 1
         fi
     else
-        pW "Now build mode is [ ${build_mode} ], script will check full"
+        pW "=> Now build mode is [ ${build_mode} ], script will check full"
         checkGitStatusClean
         checkLocalIsGitTag
         checkGitRemoteSameBranchSame
