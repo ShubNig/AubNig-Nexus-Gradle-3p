@@ -61,8 +61,7 @@ checkEnv(){
 }
 
 checkGradleModules(){
-    module_len=${#android_build_modules[@]}
-    if [ ${module_len} -le 0 ]; then
+    if [ ! -n "${android_build_modules}" ]; then
         pE "you set [ android_build_modules ] is empty"
         exit 1
     fi
@@ -128,6 +127,7 @@ git branch -v
 if [ ${is_clean_before_build} -eq 1 ]; then
     echo "=> gradle task clean"
     ${shell_run_path}/gradlew clean
+    checkFuncBack "${shell_run_path}/gradlew clean"
 fi
 
 for module in ${android_build_modules[@]};

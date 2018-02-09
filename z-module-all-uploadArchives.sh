@@ -73,8 +73,7 @@ pE(){
 
 
 checkGradleModules(){
-    module_len=${#android_build_modules[@]}
-    if [ ${module_len} -le 0 ]; then
+    if [ ! -n "${android_build_modules}" ]; then
         pE "you set [ android_build_modules ] is empty"
         exit 1
     fi
@@ -260,24 +259,29 @@ fi
 if [ ${is_clean_before_build} -eq 1 ];then
     echo "=> gradle task clean"
     ${shell_run_path}/gradlew clean
+    checkFuncBack "${shell_run_path}/gradlew clean"
 fi
 
 echo "=> gradle task ${android_build_task_generate}"
 ${shell_run_path}/gradlew ${android_build_task_generate}
+checkFuncBack "${shell_run_path}/gradlew ${android_build_task_generate}"
 
 echo "=> gradle task ${android_build_task_compile}"
 ${shell_run_path}/gradlew ${android_build_task_compile}
+checkFuncBack "${shell_run_path}/gradlew ${android_build_task_compile}"
 
 for module in ${android_build_modules[@]};
 do
     pD "=> gradle task ${shell_run_path}/gradlew -q ${module}:${android_build_task_first}"
     ${shell_run_path}/gradlew -q ${module}:${android_build_task_first}
+    checkFuncBack "${shell_run_path}/gradlew -q ${module}:${android_build_task_first}"
 #    pD "-> gradle task ${module}:dependencies --refresh-dependencies"
 #    ${shell_run_path}/gradlew -q ${module}:dependencies --refresh-dependencies
 #    pD "-> gradle task -q ${module}:${android_build_task_middle}"
 #    ${shell_run_path}/gradlew -q ${module}:${android_build_task_middle}
     pD "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
     ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+    checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
     done
 
 # jenkins config first Invoke Gradle script

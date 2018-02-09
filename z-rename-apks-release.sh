@@ -4,8 +4,8 @@ build_tag="Sinlov-App"
 build_module_name="test"
 build_product_flavors=
 build_product_flavors[0]="dev"
-build_product_flavors[1]="test"
-#build_product_flavors[2]=prd
+build_product_flavors[1]="prod"
+#build_product_flavors[2]="test"
 build_mode="release"
 
 check_count_apk_for_rename(){

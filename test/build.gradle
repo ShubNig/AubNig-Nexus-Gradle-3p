@@ -14,9 +14,9 @@ android {
         targetSdkVersion ANDROID_TARGET_SDK_VERSION as int
         versionCode VERSION_CODE as int
         versionName VERSION_NAME
+        flavorDimensions "versionCode"
 //        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     signingConfigs {
@@ -53,6 +53,14 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.keyBuild
+        }
+    }
+    productFlavors {
+        dev {
+            buildConfigField "int", "bind_mode", '1'
+        }
+        prod {
+            buildConfigField "int", "bind_mode", '2'
         }
     }
 }

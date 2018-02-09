@@ -64,8 +64,7 @@ checkEnv(){
 }
 
 checkGradleModules(){
-    module_len=${#android_build_modules[@]}
-    if [ ${module_len} -le 0 ]; then
+    if [ ! -n "${android_build_modules}" ]; then
         pE "you set [ android_build_modules ] is empty"
         exit 1
     fi
@@ -141,18 +140,22 @@ fi
 if [ ${is_clean_before_build} -eq 1 ]; then
     echo "=> gradle task clean"
     ${shell_run_path}/gradlew clean
+    checkFuncBack "${shell_run_path}/gradlew clean"
 fi
 
 for module in ${android_build_modules[@]};
 do
     pI "-> gradle task ${module}:dependencies"
     ./gradlew -q ${module}:dependencies
+    checkFuncBack "./gradlew -q ${module}:dependencies"
 #    echo "-> gradle task ${module}:dependencies --refresh-dependencies"
 #    ./gradlew -q ${module}:dependencies --refresh-dependencies
     pI "-> gradle task ${module}:${android_build_task_middle}"
     ./gradlew ${module}:${android_build_task_middle}
+    checkFuncBack "./gradlew ${module}:${android_build_task_middle}"
     pI "-> gradle task ${module}:${android_build_task_last}"
     ./gradlew ${module}:${android_build_task_last}
+    checkFuncBack "./gradlew ${module}:${android_build_task_last}"
     done
 
 # jenkins config JUnit first Invoke Gradle script

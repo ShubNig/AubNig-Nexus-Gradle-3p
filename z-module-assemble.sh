@@ -9,7 +9,7 @@ android_build_modules[0]=test
 
 # change this for productFlavors
 product_flavors=
-product_flavors[0]="Dev"
+#product_flavors[0]="Dev"
 #product_flavors[1]="Test"
 #product_flavors[2]="Prod"
 
@@ -79,8 +79,7 @@ pE(){
 
 
 checkGradleModules(){
-    module_len=${#android_build_modules[@]}
-    if [ ${module_len} -le 0 ]; then
+    if [ ! -n "${android_build_modules}" ]; then
         pE "you set [ android_build_modules ] is empty"
         exit 1
     fi
@@ -288,44 +287,52 @@ fi
 if [ ${is_clean_before_build} -eq 1 ]; then
     echo "=> gradle task clean"
     ${shell_run_path}/gradlew clean
+    checkFuncBack "${shell_run_path}/gradlew clean"
 fi
 
 echo "=> gradle task ${android_build_task_generate}"
 ${shell_run_path}/gradlew ${android_build_task_generate}
+checkFuncBack "${shell_run_path}/gradlew ${android_build_task_generate}"
 
 echo "=> gradle task ${android_build_task_compile}"
 ${shell_run_path}/gradlew ${android_build_task_compile}
+checkFuncBack "${shell_run_path}/gradlew ${android_build_task_compile}"
 
 for module in ${android_build_modules[@]};
 do
     pD "=> gradle task ${shell_run_path}/gradlew -q ${module}:${android_build_task_first}"
     ${shell_run_path}/gradlew -q ${module}:${android_build_task_first}
+    checkFuncBack "${shell_run_path}/gradlew -q ${module}:${android_build_task_first}"
 #    pD "-> gradle task ${module}:dependencies --refresh-dependencies"
 #    ${shell_run_path}/gradlew -q ${module}:dependencies --refresh-dependencies
 #    pD "-> gradle task -q ${module}:${android_build_task_middle}"
 #    ${shell_run_path}/gradlew -q ${module}:${android_build_task_middle}
-    product_flavor_len=${#product_flavors[@]}
-    if [ ${is_all_product_flavors_build} -eq 0 ];then
+
+    if [ ${is_all_product_flavors_build} -eq 1 ];then
         pI "You set build productFlavor is All"
         pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
         ${shell_run_path}/gradlew ${module}:${android_build_task_last}
-        exit 0
+        checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+    else
+        if [ ! -n "${product_flavors}" ]; then
+            pI "You set build productFlavor is None, so do All"
+            pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+            ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+            checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+        else
+            for product_flavor in ${product_flavors[@]};
+            do
+                android_build_task_last="assemble${product_flavors}${android_build_type}"
+                ${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}
+                checkFuncBack "${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}"
+                pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+                ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+                checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+            done
+        fi
     fi
-    if [ ${product_flavor_len} -le 0 ]; then
-        pI "You set build productFlavor is None, so do All"
-        pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
-        ${shell_run_path}/gradlew ${module}:${android_build_task_last}
-        exit 0
-    fi
-    for product_flavor in ${product_flavors[@]};
-    do
-        android_build_task_last="assemble${product_flavors}${android_build_type}"
-        ${shell_run_path}/gradlew ${module}:tasks | grep ${android_build_task_last}
-        checkFuncBack "${shell_run_path}/gradlew ${module}:tasks | grep ${android_build_task_last}"
-        pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
-        ${shell_run_path}/gradlew ${module}:${android_build_task_last}
-        done
     done
+
 
 # jenkins config first Invoke Gradle script
 echo -e "\nJenkins config \033[;36mInvoke Gradle script\033[0m"
@@ -339,6 +346,6 @@ echo -e "\nJenkins config \033[;36mInvoke Gradle script\033[0m"
 echo -e "\033[;34mTasks\033[0m"
 for module in ${android_build_modules[@]};
 do
-    echo -e ":${module}:uploadArchives"
+    echo -e ":${module}:assemble"
     done
 
