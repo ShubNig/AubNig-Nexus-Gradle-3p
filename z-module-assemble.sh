@@ -35,6 +35,7 @@ is_clean_before_build=0
 is_not_refresh_dependencies=0
 is_all_product_flavors_build=0
 default_origin_name="origin"
+only_product_flavors_build=""
 
 checkFuncBack(){
   if [ $? -ne 0 ]; then
@@ -165,6 +166,7 @@ More configuration\n
 \t\t[moduleName]\033[;32m only use snapshot tag release\033[0m\n
 \t-t [buildType] set \033[;33mDefault build type is ${android_build_type}\033[0m\n
 \t\t[buildType]\033[;32m only use debug release\033[0m\n
+\t-p productFlavors \033[;36m ${shell_run_name} do only this productFlavors tasks\033[0m\n
 \t-a all productFlavors \033[;36m ${shell_run_name} force do all productFlavors tasks\033[0m\n
 \t-c do clean task at begin of build\033[;36m ${shell_run_name} -c\033[0m\n
 \t-r not --refresh-dependencies at ${android_build_task_generate} \033[;36m ${shell_run_name} -r\033[0m\n
@@ -182,7 +184,7 @@ elif [ $# == 1 ]; then
 else
     run_gradle_module=""
     other_module=""
-    while getopts "hfcarm:t:" arg #after param has ":" need option
+    while getopts "hfcarm:t:p:" arg #after param has ":" need option
     do
         case ${arg} in
             h)
@@ -230,6 +232,10 @@ else
                 android_build_task_compile="compile${android_build_type}JavaWithJavac"
                 android_build_task_middle="generate${android_build_type}Sources"
                 android_build_task_last="assemble${android_build_type}"
+            ;;
+            p)
+                echo -e "=> Set productFlavors only is [ \033[;32m${OPTARG}\033[0m ]"
+                only_product_flavors_build=${OPTARG}
             ;;
         esac
     done
@@ -314,21 +320,30 @@ do
         ${shell_run_path}/gradlew ${module}:${android_build_task_last}
         checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
     else
-        if [ ! -n "${product_flavors}" ]; then
-            pI "You set build productFlavor is None, so do All"
-            pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
-            ${shell_run_path}/gradlew ${module}:${android_build_task_last}
-            checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
-        else
-            for product_flavor in ${product_flavors[@]};
-            do
-                android_build_task_last="assemble${product_flavors}${android_build_type}"
-                ${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}
-                checkFuncBack "${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}"
+        if [ ! -n "${only_product_flavors_build}" ]; then
+            if [ ! -n "${product_flavors}" ]; then
+                pI "You set build productFlavor is None, so do All"
                 pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
                 ${shell_run_path}/gradlew ${module}:${android_build_task_last}
                 checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
-            done
+            else
+                for product_flavor in ${product_flavors[@]};
+                do
+                    android_build_task_last="assemble${product_flavors}${android_build_type}"
+                    ${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}
+                    checkFuncBack "${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}"
+                    pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+                    ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+                    checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+                done
+            fi
+        else
+            android_build_task_last="assemble${only_product_flavors_build}${android_build_type}"
+            ${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}
+            checkFuncBack "${shell_run_path}/gradlew ${module}:tasks --all| grep ${android_build_task_last}"
+            pI "=> gradle task ${shell_run_path}/gradlew ${module}:${android_build_task_last}"
+            ${shell_run_path}/gradlew ${module}:${android_build_task_last}
+            checkFuncBack "${shell_run_path}/gradlew ${module}:${android_build_task_last}"
         fi
     fi
     done
