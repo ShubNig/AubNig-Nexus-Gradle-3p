@@ -328,7 +328,7 @@ if [ ${is_clean_before_build} -eq 1 ]; then
     ${shell_run_path}/gradlew clean
     checkFuncBack "${shell_run_path}/gradlew clean"
 else
-    pw "=> this build not run task graldew clean"
+    pW "=> this build not run task graldew clean"
 fi
 
 echo "=> gradle task ${android_build_task_env}"
