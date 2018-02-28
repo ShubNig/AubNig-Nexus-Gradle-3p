@@ -28,11 +28,17 @@ apply from: rootProject.file("gradle/codeQualityApp.gradle")
 
 ...
 android {
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
     testOptions.unitTests {
         all {
             jacoco {
-                includeNoLocationClasses = true
                 includeAndroidResources = true
+                includeNoLocationClasses = true
             }
         }
     }
@@ -85,4 +91,4 @@ The [Jacoco](http://www.eclemma.org/jacoco/) plugin generates coverage reports b
 
 The [checkstyle](http://www.puppycrawl.com/dtds/configuration_1_2.dtd) plugin generates coverage reports based off the unit tests.
 
-    $ gradlew checkstyleDebug
+    $ gradlew checkstyleDebugReport
