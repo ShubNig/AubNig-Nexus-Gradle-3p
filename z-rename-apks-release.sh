@@ -18,6 +18,16 @@ check_count_apk_for_rename(){
     fi
 }
 
+rename_apk(){
+    apk_file=$(find "${build_module_name}/build/outputs/apk" -name "*-*$1.apk")
+    if [ -n "${apk_file}" ]; then
+        now_time=$(date "+%Y-%m-%d-%H-%M")
+        new_tag="${now_time}__$RANDOM"
+        new_name="${build_module_name}/build/outputs/apk/${build_tag}-${project_version_name}-$1-${new_tag}.apk"
+        echo -e "From apk: ${apk_file} \nTo NewApk: ${new_name}"
+        mv "${apk_file}" "${new_name}"
+    fi
+}
 rename_apk_by_module(){
     apk_file=$(find "${build_module_name}/build/outputs/apk" -name "*$1-*$2.apk")
     if [ -n "${apk_file}" ]; then
@@ -75,9 +85,15 @@ echo -e "Now Rename Info\n
 \n"
 
 check_count_apk_for_rename
-for product_flavor in ${build_product_flavors[@]};
-do
-    echo "-> rename apk product_flavor name: ${product_flavor}"
+echo -e "${build_product_flavors[@]}"
+if [ -n ${#build_product_flavors[@]} ]; then
+       echo "-> rename apk build mode: ${build_mode}"
+      rename_apk ${build_mode}
+else
+    for product_flavor in ${build_product_flavors[@]};
+    do
+        echo "-> rename apk product_flavor name: ${product_flavor}"
         rename_apk_by_module "${product_flavor}" ${build_mode}
-    done
-exit 0
+        done
+    exit 0
+fi
