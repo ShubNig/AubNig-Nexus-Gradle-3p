@@ -71,13 +71,25 @@ check_count_apk_for_rename(){
     fi
 }
 
+strEachHeadUpperCase(){
+    echo $* | awk '{for (i=1;i<=NF;i++)printf toupper(substr($i,0,1))substr($i,2,length($i))" ";printf "\n"}' | awk 'gsub(/^ *| *$/,"")'
+}
+
+strEachHeadLowerCase(){
+    echo $* | awk '{for (i=1;i<=NF;i++)printf tolower(substr($i,0,1))substr($i,2,length($i))" ";printf "\n"}' | awk 'gsub(/^ *| *$/,"")'
+}
+
 rename_apk_by_module(){
+    do_product_flavor=$(strEachHeadLowerCase $1)
+#    pD "do_product_flavor => ${do_product_flavor}"
     apk_file_list=
     if [ $# == 2 ]; then
-        apk_file_list=$(find "${shell_run_path}/${build_module_name}/${build_module_folder}" -name "*$1-*$2.apk")
+        type_of_build=$(echo $2)
+        apk_file_list=$(find "${shell_run_path}/${build_module_name}/${build_module_folder}" -name "*${do_product_flavor}-*${type_of_build}.apk")
     else
-        apk_file_list=$(find "${shell_run_path}/${build_module_name}/${build_module_folder}" -name "*$1.apk")
+        apk_file_list=$(find "${shell_run_path}/${build_module_name}/${build_module_folder}" -name "*${do_product_flavor}.apk")
     fi
+#    pD "apk_file_list => ${apk_file_list}"
     if [ ! -n "${apk_file_list}" ]; then
         pE "can not found apk build for setting rename exit"
         exit 1
@@ -87,10 +99,11 @@ rename_apk_by_module(){
             now_time=$(date "+%Y-%m-%d-%H-%M")
             new_tag="${now_time}__$RANDOM"
             new_name=
+            do_product_flavor=$(strEachHeadUpperCase $1)
             if [ ! -n "${build_alias}" ]; then
-                new_name="${shell_run_path}/${build_module_name}/${build_module_folder}/${build_tag}-${project_version_name}-$1-${new_tag}.apk"
+                new_name="${shell_run_path}/${build_module_name}/${build_module_folder}/${build_tag}-${project_version_name}-${do_product_flavor}-${new_tag}.apk"
             else
-                new_name="${shell_run_path}/${build_module_name}/${build_module_folder}/${build_tag}-${build_alias}-${project_version_name}-$1-${new_tag}.apk"
+                new_name="${shell_run_path}/${build_module_name}/${build_module_folder}/${build_tag}-${build_alias}-${project_version_name}-${do_product_flavor}-${new_tag}.apk"
             fi
             pV "From apk: ${apk_path} \nToNewApk: ${new_name}"
             mv "${apk_path}" "${new_name}"
