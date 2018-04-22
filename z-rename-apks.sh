@@ -5,9 +5,8 @@ shell_run_name=$(basename $0)
 shell_run_path=$(cd `dirname $0`; pwd)
 
 build_tag="Sinlov-App"
-build_module_name="app"
+build_module_name="test"
 
-# set product_flavors
 build_product_flavors=
 build_product_flavors[0]="dev"
 build_product_flavors[1]="prod"
