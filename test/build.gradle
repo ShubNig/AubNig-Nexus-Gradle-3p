@@ -21,7 +21,7 @@ android {
 
     signingConfigs {
         keyBuild {
-            storeFile file(project.hasProperty('KEY_BUILD_STOREFILE') ? KEY_1_STOREFILE : '../keystore/debug.keystore')
+            storeFile file(project.hasProperty('KEY_BUILD_STOREFILE') ? KEY_1_STOREFILE : '../z-keystore/debug.keystore')
             storePassword project.hasProperty('KEY_BUILD_STOREPASS') ? KEY_1_STOREPASS : 'android'
             keyAlias project.hasProperty('KEY_BUILD_KEYALIAS') ? KEY_1_KEYALIAS : 'android'
             keyPassword project.hasProperty('KEY_BUILD_KEYPASS') ? KEY_1_KEYPASS : 'android'
